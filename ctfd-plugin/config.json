@@ -1,0 +1,7 @@
+{
+  "name": "ctfd-environment-validator",
+  "version": "1.0.0",
+  "description": "CTFd plugin to validate connectivity to vulnerable EC2 instances",
+  "author": "CTF Infrastructure Team",
+  "license": "MIT"
+}

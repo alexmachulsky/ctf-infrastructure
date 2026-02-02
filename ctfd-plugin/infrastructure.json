@@ -1,0 +1,1 @@
+{"ctfd_instance":null,"generated_at":"2026-02-02T09:22:28Z","region":"ap-south-1","subnet_id":"subnet-0654923f655a17731","vpc_id":"vpc-0e6f4d45e8248a9d4","vulnerable_instance":{"id":"i-06b7b87a360218e94","private_ip":"10.0.1.100","public_dns":"ec2-13-235-27-225.ap-south-1.compute.amazonaws.com","public_ip":"13.235.27.225"}}
