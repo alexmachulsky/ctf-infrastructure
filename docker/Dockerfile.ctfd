@@ -1,0 +1,13 @@
+# Custom CTFd image with ping utility for environment validation
+FROM ctfd/ctfd:latest
+
+# Switch to root for package installation
+USER root
+
+# Install iputils-ping for ICMP connectivity testing
+RUN apt-get update && \
+    apt-get install -y iputils-ping && \
+    rm -rf /var/lib/apt/lists/*
+
+# Keep the original user (if any) for runtime
+# CTFd container runs as root by default per docker-compose.yml

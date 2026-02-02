@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   ctfd:
-    image: ctfd/ctfd:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.ctfd
     container_name: ctfd
     restart: always
     ports:
@@ -19,6 +21,7 @@ services:
     volumes:
       - ctfd_logs:/var/log/CTFd
       - ctfd_uploads:/var/uploads
+      # Plugin will be added in Task 4
       - ./ctfd-plugin:/opt/CTFd/CTFd/plugins/ctfd_environment_validator:ro
     depends_on:
       - db
