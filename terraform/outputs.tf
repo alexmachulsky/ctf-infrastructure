@@ -114,9 +114,9 @@ output "infrastructure_info" {
       public_dns = module.ctfd_instance[0].instance_public_dns
       url        = "http://${module.ctfd_instance[0].instance_public_ip}:8000"
     } : null
-    vpc_id        = module.network.vpc_id
-    subnet_id     = module.network.public_subnet_id
-    region        = var.aws_region
-    generated_at  = timestamp()
+    vpc_id       = module.network.vpc_id
+    subnet_id    = module.network.public_subnet_id
+    region       = var.aws_region
+    generated_at = timestamp()
   })
 }

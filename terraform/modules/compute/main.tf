@@ -26,9 +26,9 @@ resource "aws_instance" "main" {
 
 # AMI from Instance (Optional - for bonus requirement)
 resource "aws_ami_from_instance" "vulnerable_ami" {
-  count              = var.create_ami ? 1 : 0
-  name               = var.ami_name
-  source_instance_id = aws_instance.main.id
+  count                   = var.create_ami ? 1 : 0
+  name                    = var.ami_name
+  source_instance_id      = aws_instance.main.id
   snapshot_without_reboot = false
 
   tags = {

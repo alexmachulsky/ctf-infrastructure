@@ -46,12 +46,12 @@ data "aws_availability_zones" "available" {
 module "network" {
   source = "./modules/network"
 
-  project_name        = var.project_name
-  vpc_cidr            = var.vpc_cidr
-  public_subnet_cidr  = var.public_subnet_cidr
-  availability_zone   = data.aws_availability_zones.available.names[0]
-  allowed_ssh_cidr    = var.allowed_ssh_cidr
-  allowed_icmp_cidr   = var.allowed_icmp_cidr
+  project_name       = var.project_name
+  vpc_cidr           = var.vpc_cidr
+  public_subnet_cidr = var.public_subnet_cidr
+  availability_zone  = data.aws_availability_zones.available.names[0]
+  allowed_ssh_cidr   = var.allowed_ssh_cidr
+  allowed_icmp_cidr  = var.allowed_icmp_cidr
 }
 
 # Read vulnerable system setup script
