@@ -26,30 +26,62 @@ This project automates the deployment of a complete CTF (Capture The Flag) infra
 ## 📋 Prerequisites
 
 - **AWS Account** with EC2/VPC permissions
-- **Terraform** >= 1.0.0
-- **AWS CLI** configured
-- **Docker** and **Docker Compose**
-- **Ubuntu 22.04** (for Jenkins)
-- **SSH Key pair** for EC2 access
+- **Linux/macOS** system (or WSL2 on Windows)
+- Internet connection
+
+**Note**: The setup script will automatically install:
+- Terraform >= 1.0.0
+- AWS CLI
+- Docker & Docker Compose
+- Git and other tools
 
 ## 🚀 Quick Start
+
+### Automated Setup (Recommended)
 
 ```bash
 # 1. Clone repository
 git clone https://github.com/alexmachulsky/ctf-infrastructure.git
 cd ctf-infrastructure
 
-# 2. Configure AWS
-aws configure
-# Region: ap-south-1
+# 2. Run setup script (installs all requirements)
+./scripts/setup-requirements.sh
 
-# 3. Generate SSH key
+# This will:
+#   - Detect your OS (Ubuntu/Debian/RHEL/CentOS/macOS)
+#   - Install Terraform, AWS CLI, Docker, etc.
+#   - Generate SSH key
+#   - Configure AWS credentials (interactive)
+```
+
+### Manual Setup
+
+```bash
+# 1. Clone repository
+git clone https://github.com/alexmachulsky/ctf-infrastructure.git
+cd ctf-infrastructure
+
+# 2. Install requirements manually (if not using setup script)
+# - Install Terraform: https://www.terraform.io/downloads
+# - Install AWS CLI: https://aws.amazon.com/cli/
+# - Install Docker: https://docs.docker.com/get-docker/
+
+# 3. Configure AWS
+aws configure
+# Region: ap-south-1 (or your preferred region)
+
+# 4. Generate SSH key
 ssh-keygen -t rsa -b 4096 -f ~/.ssh/ctf-infrastructure-key.pem -N ""
 
 # 4. Deploy infrastructure
 cd terraform
 terraform init
 terraform apply
+
+# 5. Import SSH key to AWS
+aws ec2 import-key-pair --key-name ctf-infrastructure-key \
+  --public-key-material fileb://~/.ssh/ctf-infrastructure-key.pem.pub \
+  --region ap-south-1
 
 # 5. Get instance IP
 export INSTANCE_IP=$(terraform output -raw vulnerable_instance_public_ip)
