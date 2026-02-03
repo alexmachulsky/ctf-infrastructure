@@ -292,7 +292,7 @@ pipeline {
                         ssh -i ~/.ssh/ctf-infrastructure-key.pem \\
                             -o StrictHostKeyChecking=no \\
                             ubuntu@${env.VULNERABLE_INSTANCE_IP} \\
-                            'cd ~/docker && sudo docker compose up -d'
+                            'cd ~/docker && sudo docker-compose up -d'
                         
                         echo "✓ CTFd deployed successfully"
                         echo "Access CTFd at: http://${env.VULNERABLE_INSTANCE_IP}:8000"
