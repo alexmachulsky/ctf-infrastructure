@@ -68,8 +68,15 @@ locals {
     # Update system
     apt-get update
     
-    # Install required packages
-    apt-get install -y curl wget vim net-tools
+    # Install required packages including Docker
+    apt-get install -y curl wget vim net-tools docker.io
+    
+    # Enable and start Docker
+    systemctl enable docker
+    systemctl start docker
+    
+    # Add ubuntu user to docker group
+    usermod -aG docker ubuntu
     
     # Copy and execute vulnerable system setup script
     cat > /tmp/setup-vulnerable-system.sh << 'SCRIPT'
