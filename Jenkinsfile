@@ -201,9 +201,16 @@ pipeline {
                     // Store outputs for later stages
                     script {
                         def infraJson = readJSON file: "${INFRASTRUCTURE_JSON}"
-                        env.VULNERABLE_INSTANCE_IP = infraJson.vulnerable_instance.value.public_ip
-                        env.VULNERABLE_INSTANCE_ID = infraJson.vulnerable_instance.value.id
-                        env.VPC_ID = infraJson.vpc_id.value
+                        // Terraform output format: {output_name: {value: actual_value}}
+                        if (infraJson.vulnerable_instance_public_ip) {
+                            env.VULNERABLE_INSTANCE_IP = infraJson.vulnerable_instance_public_ip.value
+                        }
+                        if (infraJson.vulnerable_instance_id) {
+                            env.VULNERABLE_INSTANCE_ID = infraJson.vulnerable_instance_id.value
+                        }
+                        if (infraJson.vpc_id) {
+                            env.VPC_ID = infraJson.vpc_id.value
+                        }
                     }
                     }
                 }
