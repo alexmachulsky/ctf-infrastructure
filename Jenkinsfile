@@ -2,8 +2,7 @@ pipeline {
     agent any
     
     environment {
-        // AWS credentials - should be configured in Jenkins credentials store
-        AWS_CREDENTIALS = credentials('aws-credentials')
+        // AWS Region
         AWS_REGION = 'ap-south-1'
         
         // Terraform variables
@@ -63,16 +62,22 @@ pipeline {
                 echo '🔧 Setting up build environment...'
                 
                 script {
-                    // Verify required tools
-                    sh '''
-                        echo "Checking required tools..."
-                        terraform version
-                        aws --version
-                        
-                        echo ""
-                        echo "Validating AWS credentials..."
-                        aws sts get-caller-identity
-                    '''
+                    withCredentials([usernamePassword(
+                        credentialsId: 'aws-credentials',
+                        usernameVariable: 'AWS_ACCESS_KEY_ID',
+                        passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                    )]) {
+                        // Verify required tools
+                        sh '''
+                            echo "Checking required tools..."
+                            terraform version
+                            aws --version
+                            
+                            echo ""
+                            echo "Validating AWS credentials..."
+                            aws sts get-caller-identity
+                        '''
+                    }
                 }
             }
         }
@@ -81,11 +86,17 @@ pipeline {
             steps {
                 echo '🏗️ Initializing Terraform...'
                 
-                dir("${TERRAFORM_DIR}") {
-                    sh '''
-                        terraform init -upgrade
-                        terraform validate
-                    '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-credentials',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    dir("${TERRAFORM_DIR}") {
+                        sh '''
+                            terraform init -upgrade
+                            terraform validate
+                        '''
+                    }
                 }
             }
         }
@@ -97,15 +108,21 @@ pipeline {
             steps {
                 echo '📋 Creating Terraform execution plan...'
                 
-                dir("${TERRAFORM_DIR}") {
-                    sh '''
-                        terraform plan -out=tfplan
-                        
-                        echo ""
-                        echo "Plan saved to: terraform/tfplan"
-                        echo "Resources to be created/modified/destroyed:"
-                        terraform show -json tfplan | jq -r '.resource_changes[] | "  - \\(.change.actions[0]) \\(.type).\\(.name)"'
-                    '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-credentials',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    dir("${TERRAFORM_DIR}") {
+                        sh '''
+                            terraform plan -out=tfplan
+                            
+                            echo ""
+                            echo "Plan saved to: terraform/tfplan"
+                            echo "Resources to be created/modified/destroyed:"
+                            terraform show -json tfplan | jq -r '.resource_changes[] | "  - \\(.change.actions[0]) \\(.type).\\(.name)"'
+                        '''
+                    }
                 }
             }
         }
@@ -150,7 +167,12 @@ pipeline {
             steps {
                 echo '🚀 Applying Terraform configuration...'
                 
-                dir("${TERRAFORM_DIR}") {
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-credentials',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    dir("${TERRAFORM_DIR}") {
                     sh '''
                         terraform apply -auto-approve tfplan
                         
@@ -183,6 +205,7 @@ pipeline {
                         env.VULNERABLE_INSTANCE_ID = infraJson.vulnerable_instance.value.id
                         env.VPC_ID = infraJson.vpc_id.value
                     }
+                    }
                 }
             }
         }
@@ -194,7 +217,12 @@ pipeline {
             steps {
                 echo '⏳ Waiting for EC2 instance to be ready...'
                 
-                script {
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-credentials',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    script {
                     sh """
                         echo "Waiting for instance ${env.VULNERABLE_INSTANCE_ID} to pass status checks..."
                         
@@ -218,6 +246,7 @@ pipeline {
                         echo "Waiting 60 seconds for user-data script to complete..."
                         sleep 60
                     """
+                    }
                 }
             }
         }
@@ -307,7 +336,12 @@ pipeline {
             steps {
                 echo '🗑️ Destroying infrastructure...'
                 
-                script {
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-credentials',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    script {
                     if (params.AUTO_APPROVE == false) {
                         input(
                             message: 'Are you sure you want to destroy all infrastructure?',
@@ -321,6 +355,7 @@ pipeline {
                             terraform destroy -auto-approve
                             echo "✓ Infrastructure destroyed successfully"
                         '''
+                    }
                     }
                 }
             }
