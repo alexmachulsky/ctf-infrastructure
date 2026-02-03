@@ -115,7 +115,7 @@ pipeline {
                 )]) {
                     dir("${TERRAFORM_DIR}") {
                         sh '''
-                            terraform plan -var="key_name=ctf-infrastructure-key" -out=tfplan
+                            terraform plan -var="key_name=ctf-infrastructure-key" -var="aws_region=ap-south-1" -out=tfplan
                             
                             echo ""
                             echo "Plan saved to: terraform/tfplan"
@@ -352,7 +352,7 @@ pipeline {
                     
                     dir("${TERRAFORM_DIR}") {
                         sh '''
-                            terraform destroy -var="key_name=ctf-infrastructure-key" -auto-approve
+                            terraform destroy -var="key_name=ctf-infrastructure-key" -var="aws_region=ap-south-1" -auto-approve
                             echo "✓ Infrastructure destroyed successfully"
                         '''
                     }
