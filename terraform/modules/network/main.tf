@@ -78,6 +78,15 @@ resource "aws_security_group" "vulnerable_instance" {
     cidr_blocks = var.allowed_icmp_cidr
   }
 
+  # CTFd web access
+  ingress {
+    description = "CTFd web interface"
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   # Allow all outbound traffic
   egress {
     description = "All outbound traffic"

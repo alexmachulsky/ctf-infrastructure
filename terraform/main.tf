@@ -82,6 +82,11 @@ locals {
     curl -L "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
     
+    # Enable SSH password authentication for CTF participants
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+    systemctl restart sshd
+    
     # Copy and execute vulnerable system setup script
     cat > /tmp/setup-vulnerable-system.sh << 'SCRIPT'
     ${data.local_file.setup_script.content}
